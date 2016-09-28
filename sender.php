@@ -20,29 +20,28 @@ $all_msg="";
 foreach ($city_list as $city) {
 	echo $city['name'];
 	if (preg_match("/".$city['name']."<\/FONT><\/TD><TD vAlign=center align=left width='70%'.*?>(.*?)<\/TD>/", $html, $match)) {
-		$text=strip_tags($match[1]);
-		if ($text != $city['text']) {
-			$msg = $city['name']." 更新為「".$text."」\n";
-			$all_msg .= $msg;
-			$data[$city['city']] = array(
-				'update'=>true,
-				'name'=>$city['name'],
-				'text'=>$msg,
-				'time'=>date("Y-m-d H:i:s")
-			);
-			$query = new query;
-			$query->table = 'city';
-			$query->value = array('text', $text);
-			$query->where = array('city', $city['city']);
-			$query->UPDATE();
-		} else {
-			$data[$city['city']] = array('update'=>false);
-		}
+		$text = strip_tags($match[1]);
+		$msg = $city['name']." 更新為「".$text."」\n";
 	} else {
 		echo " not found";
+		$text = "無停班停課消息";
+		$msg = $city['name']." 無停班停課消息\n";
+	}
+	if ($text != $city['text']) {
+		$all_msg .= $msg;
 		$data[$city['city']] = array(
-			'update'=>false
+			'update'=>true,
+			'name'=>$city['name'],
+			'text'=>$msg,
+			'time'=>date("Y-m-d H:i:s")
 		);
+		$query = new query;
+		$query->table = 'city';
+		$query->value = array('text', $text);
+		$query->where = array('city', $city['city']);
+		$query->UPDATE();
+	} else {
+		$data[$city['city']] = array('update'=>false);
 	}
 	echo "\n";
 }
