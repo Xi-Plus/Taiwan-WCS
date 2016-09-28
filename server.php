@@ -136,13 +136,13 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 					$result = $query->INSERT();
 					$messageData=array(
 						"recipient"=>array("id"=>$user_id),
-						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了"))
+						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了")."\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
 					);
 				}
 			} else if (isset($messaging['message'])) {
 				$messageData=array(
 					"recipient"=>array("id"=>$user_id),
-					"message"=>array("text"=>"請點擊左下角選單進行設定")
+					"message"=>array("text"=>"請點擊左下角選單並根據提示文字點選進行設定\n\n本粉專是由程式自動控制，詢問為何尚未公布、何時公布、為何不放假等問題通常不會得到回覆\n\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
 				);
 			} else {
 				$messageData=array(

@@ -54,7 +54,7 @@ foreach ($result as $follow) {
 foreach ($messages as $uid => $message) {
 	$messageData=array(
 		"recipient"=>array("id"=>$uid),
-		"message"=>array("text"=>$message)
+		"message"=>array("text"=>$message."\n資料來源： http://www.dgpa.gov.tw/nds.html")
 	);
 	$commend = 'curl -X POST -H "Content-Type: application/json" -d \''.json_encode($messageData,JSON_HEX_APOS|JSON_HEX_QUOT).'\' "https://graph.facebook.com/v2.7/me/messages?access_token='.$cfg['page_token'].'"';
 	system($commend);
