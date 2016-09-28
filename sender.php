@@ -7,7 +7,7 @@ require_once(__DIR__.'/function/SQL-function/sql.php');
 
 $time = date("Y-m-d H:i:s");
 
-$html=file_get_contents("http://www.dgpa.gov.tw/");
+$html=file_get_contents("http://www.dgpa.gov.tw/nds.html");
 if ($html===false) {
 	exit("get fail");
 }
@@ -17,13 +17,15 @@ $query = new query;
 $query->table = 'city';
 $city_list = $query->SELECT();
 foreach ($city_list as $city) {
-	if (preg_match("/".$city['name']."<\/FONT><\/TD>    <TD vAlign=center align=left width=\"70%\".*?>(.*?)<\/TD>/", $html, $match)) {
+	echo $city['name'];
+	if (preg_match("/".$city['name']."<\/FONT><\/TD><TD vAlign=center align=left width='70%'.*?>(.*?)<\/TD>/", $html, $match)) {
 		$text=strip_tags($match[1]);
 		if ($text != $city['text']) {
 			$data[$city['city']] = array(
 				'update'=>true,
 				'name'=>$city['name'],
-				'text'=>$text
+				'text'=>$text,
+				'time'=>date("Y-m-d H:i:s")
 			);
 			$query = new query;
 			$query->table = 'city';
@@ -34,10 +36,12 @@ foreach ($city_list as $city) {
 			$data[$city['city']] = array('update'=>false);
 		}
 	} else {
+		echo " not found";
 		$data[$city['city']] = array(
 			'update'=>false
 		);
 	}
+	echo "\n";
 }
 
 $messages=array();
@@ -52,6 +56,7 @@ foreach ($result as $follow) {
 }
 
 foreach ($messages as $uid => $message) {
+	echo "Send to ".$uid;
 	$messageData=array(
 		"recipient"=>array("id"=>$uid),
 		"message"=>array("text"=>$message."\n資料來源： http://www.dgpa.gov.tw/nds.html")
@@ -66,5 +71,6 @@ foreach ($messages as $uid => $message) {
 		array('text', $message)
 	);
 	$query->INSERT();
+	echo "\n";
 }
 ?>
