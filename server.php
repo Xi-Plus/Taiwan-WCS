@@ -136,7 +136,7 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 					$result = $query->INSERT();
 					$messageData=array(
 						"recipient"=>array("id"=>$user_id),
-						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了")."\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
+						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了，不必再次設定")."\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
 					);
 				}
 			} else if (isset($messaging['message'])) {
