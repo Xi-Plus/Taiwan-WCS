@@ -22,6 +22,7 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 	foreach ($result as $value) {
 		$area_list[$value['area']]['city'][] = $value['city'];
 		$city_list[$value['city']] = $value['name'];
+		$status[$value['city']] = $value['text'];
 	}
 	foreach ($input['entry'] as $entry) {
 		foreach ($entry['messaging'] as $messaging) {
@@ -32,7 +33,22 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 			$user_id = $messaging['sender']['id'];
 			if (isset($messaging['message']['quick_reply']) || isset($messaging['postback'])) {
 				$payload = $messaging['message']['quick_reply']['payload'] ?? $messaging['postback']['payload'];
-				if ($payload == 'new') {
+				if ($payload == 'status') {
+					$query = new query;
+					$query->table = 'follow';
+					$query->where = array(
+						array('uid', $user_id)
+					);
+					$result = $query->SELECT();
+					$list = "";
+					foreach ($result as $key => $value) {
+						$list .= $city_list[$value['city']]."「".$status[$value['city']]."」\n";
+					}
+					$messageData=array(
+						"recipient"=>array("id"=>$user_id),
+						"message"=>array("text"=>(count($result)>0?"目前停班停課狀態為：".$list:"你尚未接收任何通知"))
+					);
+				} else if ($payload == 'new') {
 					$messageData=array(
 						"recipient"=>array("id"=>$user_id),
 						"message"=>array(
@@ -136,7 +152,7 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 					$result = $query->INSERT();
 					$messageData=array(
 						"recipient"=>array("id"=>$user_id),
-						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了，不必再次設定")."\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
+						"message"=>array("text"=>($result>0?"已開始接收 ".$city_list[$city_code]." 的通知":$city_list[$city_code]." 已經接收過了，不必再次設定")."\n目前停班停課狀態為「.".$status[$city_code].".」"."\n\n人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知")
 					);
 				}
 			} else if (isset($messaging['message'])) {

@@ -6,6 +6,11 @@ $commend = 'curl -X POST -H "Content-Type: application/json" -d \'{
   "call_to_actions":[
     {
       "type":"postback",
+      "title":"查詢停班停課狀態",
+      "payload":"status"
+    },
+    {
+      "type":"postback",
       "title":"接收新的通知",
       "payload":"new"
     },
