@@ -46,7 +46,7 @@ if ($method == 'GET' && $_GET['hub_mode'] == 'subscribe' &&  $_GET['hub_verify_t
 					}
 					$messageData=array(
 						"recipient"=>array("id"=>$user_id),
-						"message"=>array("text"=>(count($result)>0?"目前停班停課公告為：".$list:"你尚未接收任何通知"))
+						"message"=>array("text"=>(count($result)>0?"目前停班停課公告為：\n".$list:"你尚未接收任何通知"))
 					);
 				} else if ($payload == 'new') {
 					$messageData=array(
