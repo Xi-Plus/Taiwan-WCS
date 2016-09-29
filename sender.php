@@ -21,13 +21,12 @@ foreach ($city_list as $city) {
 	echo $city['name'];
 	if (preg_match("/".$city['name']."<\/FONT><\/TD><TD vAlign=center align=left width='70%'.*?>(.*?)<\/TD>/", $html, $match)) {
 		$text = strip_tags($match[1]);
-		$msg = $city['name']." 更新為「".$text."」\n";
 	} else {
 		echo " not found";
-		$text = "無停班停課消息";
-		$msg = $city['name']." 無停班停課消息\n";
+		$text = $cfg['no_status_text'];
 	}
 	if ($text != $city['text']) {
+		$msg = $city['name']." 更新為「".$text."」\n";
 		$all_msg .= $msg;
 		$data[$city['city']] = array(
 			'update'=>true,
