@@ -9,6 +9,14 @@ foreach ($row as $value) {
 	$D["citylist"][] = $value["city"];
 }
 
+$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}cityshortname`");
+$res = $sth->execute();
+$row = $sth->fetchAll(PDO::FETCH_ASSOC);
+$D["cityshortname"] = array();
+foreach ($row as $value) {
+	$D["cityshortname"][$value["shortname"]] = $value["fullname"];
+}
+
 function getuserlist($tmid) {
 	global $C, $G;
 	$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");

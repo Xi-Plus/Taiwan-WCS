@@ -119,8 +119,12 @@ foreach ($row as $data) {
 					}
 					if ($city === "") {
 						foreach ($temp["address_components"] as $temp2) {
-							if (isset($D["city"][$temp2["long_name"]])) {
-								$city = $temp2["long_name"];
+							$name = $temp2["long_name"];
+							if (isset($D["cityshortname"][$name])) {
+								$name = $D["cityshortname"][$name];
+							}
+							if (isset($D["city"][$name])) {
+								$city = $name;
 								break;
 							}
 						}
@@ -166,8 +170,11 @@ foreach ($row as $data) {
 						SendMessage($tmid, "一次命令最多只能接收 {$C['add_limit']} 個縣市，請分次輸入");
 						break;
 					}
-					for ($i=1; isset($cmd[$i]); $i++) { 
+					for ($i=1; isset($cmd[$i]); $i++) {
 						$city = $cmd[$i];
+						if (isset($D["cityshortname"][$city])) {
+							$city = $D["cityshortname"][$city];
+						}
 						if (isset($D["city"][$city])) {
 							$user = getuserlist($tmid);
 							if (!in_array($city, $user)) {
@@ -204,6 +211,9 @@ foreach ($row as $data) {
 						break;
 					}
 					$city = $cmd[1];
+					if (isset($D["cityshortname"][$city])) {
+						$city = $D["cityshortname"][$city];
+					}
 					if (!isset($D["city"][$city])) {
 						SendMessage($tmid, "找不到 ".$city." ，縣市名必須用字完全一樣");
 					} else if (in_array($city, $user)) {
