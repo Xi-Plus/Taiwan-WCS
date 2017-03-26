@@ -91,11 +91,58 @@ foreach ($row as $data) {
 				WriteLog("[read] ".$sid);
 				continue;
 			}
-			if (!isset($messaging['message']['text'])) {
+			if (isset($messaging['message']['attachments']) && $messaging['message']['attachments'][0]['type'] == "location") {
+				$lat = $messaging['message']['attachments'][0]['payload']['coordinates']['lat'];
+				$long = $messaging['message']['attachments'][0]['payload']['coordinates']['long'];
+				$res = file_get_contents("http://maps.google.com/maps/api/geocode/json?latlng=".$lat.",".$long."&language=zh-TW");
+				if ($res === false) {
+					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
+					WriteLog("[follow][error] fetch location 1");
+					continue;
+				}
+				$res = json_decode($res, true);
+				if ($res === null) {
+					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
+					WriteLog("[follow][error] fetch location 2");
+					continue;
+				}
+				if ($res["status"] !== "OK") {
+					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
+					WriteLog("[follow][error] fetch location 3 ".$res["error_message"]);
+					continue;
+				}
+				$city = "";
+				$address = "";
+				foreach ($res["results"] as $temp) {
+					if (in_array("street_address", $temp["types"])) {
+						$address = $temp["formatted_address"];
+					}
+					if ($city === "") {
+						foreach ($temp["address_components"] as $temp2) {
+							if (isset($D["city"][$temp2["long_name"]])) {
+								$city = $temp2["long_name"];
+								break;
+							}
+						}
+					}
+					if ($city !== "" && $address !== "") {
+						break;
+					}
+				}
+				SendMessage($tmid, "你的位置是：".$address."\n".
+					"辨識為 ".$city);
+				if ($city === "") {
+					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
+					WriteLog("[follow][error] fetch location 4");
+					continue;
+				}
+				$msg = "/add ".$city;
+			} else if (!isset($messaging['message']['text'])) {
 				SendMessage($tmid, "僅接受文字訊息");
 				continue;
+			} else {
+				$msg = $messaging['message']['text'];
 			}
-			$msg = $messaging['message']['text'];
 			if ($msg[0] !== "/") {
 				SendMessage($tmid, "無法辨識的訊息\n\n".
 					"本粉專是由程式自動運作，詢問為何尚未公布、何時公布、為何不放假等問題皆不會得到回覆，本粉專非政府機關所有\n\n".
