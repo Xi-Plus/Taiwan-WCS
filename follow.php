@@ -97,8 +97,8 @@ foreach ($row as $data) {
 			}
 			$msg = $messaging['message']['text'];
 			if ($msg[0] !== "/") {
-				SendMessage($tmid, "無法辨識的訊息\n".
-					"本粉專由機器人自動運作\n".
+				SendMessage($tmid, "無法辨識的訊息\n\n".
+					"本粉專是由程式自動運作，詢問為何尚未公布、何時公布、為何不放假等問題皆不會得到回覆，本粉專非政府機關所有\n\n".
 					"啟用訊息通知輸入 /add\n".
 					"顯示所有命令輸入 /help");
 				continue;
@@ -115,31 +115,30 @@ foreach ($row as $data) {
 						SendMessage($tmid, $msg);
 						break;
 					}
-					$city = $cmd[1];
-					if (isset($cmd[2])) {
-						SendMessage($tmid, "參數個數錯誤\n".
-							"必須提供1個參數為縣市");
+					if (isset($cmd[$C['add_limit']+1])) {
+						SendMessage($tmid, "一次命令最多只能接收 {$C['add_limit']} 個縣市，請分次輸入");
 						break;
 					}
-					if (isset($D["city"][$city])) {
-						$user = getuserlist($tmid);
-						if (!in_array($city, $user)) {
-							$sth = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}follow` (`tmid`, `city`) VALUES (:tmid, :city)");
-							$sth->bindValue(":tmid", $tmid);
-							$sth->bindValue(":city", $city);
-							$res = $sth->execute();
-							SendMessage($tmid, "已開始接收 ".$city." 的通知\n".
-								"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知");
+					for ($i=1; isset($cmd[$i]); $i++) { 
+						$city = $cmd[$i];
+						if (isset($D["city"][$city])) {
+							$user = getuserlist($tmid);
+							if (!in_array($city, $user)) {
+								$sth = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}follow` (`tmid`, `city`) VALUES (:tmid, :city)");
+								$sth->bindValue(":tmid", $tmid);
+								$sth->bindValue(":city", $city);
+								$res = $sth->execute();
+								SendMessage($tmid, "已開始接收 ".$city." 的通知\n".
+									"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知");
+							} else {
+								SendMessage($tmid, $city." 已經接收過了\n".
+									"要取消請使用 /del");
+							}
 						} else {
-							SendMessage($tmid, $city." 已經接收過了\n".
-								"要取消請使用 /del");
+							$msg = "找不到 ".$city." ，縣市名必須用字完全一樣\n".
+								"輸入 /add 查看可用的縣市";
+							SendMessage($tmid, $msg);
 						}
-					} else {
-						$msg = "找不到此縣市，縣市名必須用字完全一樣\n".
-							"輸入 /add [縣市] 接收此縣市的通知\n\n".
-							"可用的縣市有：".implode("、", $D["citylist"])."\n\n".
-							"範例： /add ".$D["citylist"][0];
-						SendMessage($tmid, $msg);
 					}
 					break;
 

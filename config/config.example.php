@@ -13,6 +13,8 @@ $C['DBTBprefix'] = 'taiwan_wcs_';
 
 $C['fetch'] = 'http://typhdstr.dgpa.gov.tw/?uid=48';
 
+$C['add_limit'] = 5;
+
 $C["allowsapi"] = array("cli");
 
 $G["db"] = new PDO ('mysql:host='.$C["DBhost"].';dbname='.$C["DBname"].';charset=utf8', $C["DBuser"], $C["DBpass"]);
