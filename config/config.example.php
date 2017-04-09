@@ -15,6 +15,8 @@ $C['fetch'] = 'http://typhdstr.dgpa.gov.tw/?uid=48';
 
 $C['add_limit'] = 5;
 
+$C['LogKeep'] = 86400*7;
+
 $C["allowsapi"] = array("cli");
 
 $G["db"] = new PDO ('mysql:host='.$C["DBhost"].';dbname='.$C["DBname"].';charset=utf8', $C["DBuser"], $C["DBpass"]);
