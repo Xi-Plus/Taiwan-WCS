@@ -14,11 +14,12 @@ if (count($citys) === 0) {
 	exit("no change\n");
 }
 
-$msg = "";
+$msg = date("Y/m/d H:i")."\n\n";
 foreach ($citys as $city) {
-	$msg .= $city["city"]." 更新為「".$city["status"]."」\n";
+	$msg .= $city["city"]." 更新為「".$city["status"]."」\n\n";
 }
-$msg .= "\n資料來源： ".$C["fetch"];
+$msg .= "資料來源： ".$C["fetch"];
+echo $msg."\n";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/v2.8/me/feed");

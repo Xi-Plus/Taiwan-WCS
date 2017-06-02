@@ -19,11 +19,12 @@ $html = str_replace(array("\r\n", "\n"), "", $html);
 
 $sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0 WHERE `city` = :city");
 foreach ($D["citylist"] as $city) {
-	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD vAlign=center align=left width=[\"\']70%[\"\'][^>]*>(.*?)<\/TD>/", $html, $m)) {
+	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD vAlign=center align=left width=[\"']70%[\"'][^>]*>(.*?)<\/TD>/", $html, $m)) {
 		$status = strip_tags($m[1]);
 	} else {
 		$status = "無停班停課消息";
 	}
+	echo $city." ".$status."\n";
 	
 	if ($status != $D["city"][$city]["status"]) {
 		$sthcity->bindValue(":status", $status);
@@ -38,5 +39,4 @@ foreach ($D["citylist"] as $city) {
 }
 exec("php ".__DIR__."/fbpost.php > /dev/null 2>&1 &");
 exec("php ".__DIR__."/fbmessage.php > /dev/null 2>&1 &");
-WriteLog("[fetch][info] runtime=".round((microtime(true)-$start), 6));
-
+WriteLog("[fetch][info] done");
