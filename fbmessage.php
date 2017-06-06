@@ -56,7 +56,7 @@ foreach ($row as $msg) {
 	$sthread->bindValue(":lastread", date("Y-m-d H:i:s"));
 	$sthread->bindValue(":tmid", $msg["tmid"]);
 	$sthread->execute();
-	if ($res) {
+	if ($res === true || $res["code"] == 230) {
 		$sthdel->bindValue(":hash", $msg["hash"]);
 		$res = $sthdel->execute();
 		if ($res === false) {

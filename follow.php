@@ -93,6 +93,17 @@ foreach ($row as $data) {
 			if (isset($messaging['read'])) {
 				continue;
 			}
+			if (isset($messaging['message']['text']) && $messaging['message']['text'] == "/unblock") {
+				$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `mark` = 0 WHERE `tmid` = :tmid");
+				$sth->bindValue(":tmid", $tmid);
+				$sth->execute();
+				SendMessage($tmid, "已解除封鎖");
+				continue;
+			}
+			if ($row["mark"] == -1) {
+				SendMessage($tmid, "您已被程式自動封鎖，因為您先前封鎖的本粉專。");
+				continue;
+			}
 			if (isset($messaging['message']['attachments']) && $messaging['message']['attachments'][0]['type'] == "location") {
 				$lat = $messaging['message']['attachments'][0]['payload']['coordinates']['lat'];
 				$long = $messaging['message']['attachments'][0]['payload']['coordinates']['long'];
