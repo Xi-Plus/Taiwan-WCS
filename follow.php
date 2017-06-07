@@ -101,7 +101,7 @@ foreach ($row as $data) {
 				continue;
 			}
 			if ($row["mark"] == -1) {
-				SendMessage($tmid, "您已被程式自動封鎖，因為您先前封鎖的本粉專。");
+				SendMessage($tmid, "您已被程式自動封鎖，因為您先前封鎖本粉專。");
 				continue;
 			}
 			if (isset($messaging['message']['attachments']) && $messaging['message']['attachments'][0]['type'] == "location") {
