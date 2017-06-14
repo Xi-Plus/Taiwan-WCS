@@ -10,7 +10,13 @@ require(__DIR__.'/function/getlist.php');
 
 $time = date("Y-m-d H:i:s");
 
-$html = file_get_contents($C["fetch"]);
+$context = array(
+    "ssl" => array(
+        "verify_peer" => false,
+        "verify_peer_name" => false,
+    )
+);  
+$html = file_get_contents($C["fetch"], false, stream_context_create($context));
 if ($html === false) {
 	WriteLog("fetch fail");
 	exit;

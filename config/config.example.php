@@ -11,7 +11,7 @@ $C['DBuser'] = 'user';
 $C['DBpass'] = 'pass';
 $C['DBTBprefix'] = 'taiwan_wcs_';
 
-$C['fetch'] = 'http://www.dgpa.gov.tw/typh/daily/nds.html';
+$C['fetch'] = 'https://www.dgpa.gov.tw/typh/daily/nds.html';
 
 $C['add_limit'] = 5;
 
