@@ -8,6 +8,7 @@ require(__DIR__.'/function/curl.php');
 require(__DIR__.'/function/log.php');
 require(__DIR__.'/function/sendmessage.php');
 require(__DIR__.'/function/getlist.php');
+require(__DIR__.'/function/msgparse.php');
 
 $sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}input` ORDER BY `time` ASC");
 $res = $sth->execute();
@@ -164,15 +165,24 @@ foreach ($row as $data) {
 				$msg = $messaging['message']['text'];
 			}
 			if ($msg[0] !== "/") {
-				SendMessage($tmid, "本粉專由程式自動運作，無法回應問題\n\n".
-					"常見問題解答：\n".
-					"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n".
-					"Q: 為何尚未公布　A: 問各縣市政府\n".
-					"Q: 何時公布　A: 問各縣市政府\n".
-					"Q: 為何不放假　A: 問各縣市政府\n".
-					"本粉專非政府機關所有\n\n".
-					"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n".
-					"顯示所有命令輸入 /help");
+				if (($res = msgparse($msg)) !== "") {
+					SendMessage($tmid, $res);
+				} else {
+					SendMessage($tmid, "本粉專由程式自動運作，無法回應問題\n\n".
+						"常見問題解答：\n".
+						"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n".
+						"Q: 為何尚未公布　A: 問各縣市政府\n".
+						"Q: 何時公布　A: 問各縣市政府\n".
+						"Q: 為何不放假　A: 問各縣市政府\n".
+						"本粉專非政府機關所有\n\n".
+						"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n".
+						"顯示所有命令輸入 /help");
+				}
+				$sth = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}receive` (`msg`, `sid`, `hash`) VALUES (:msg, :sid, :hash)");
+				$sth->bindValue(":msg", $msg);
+				$sth->bindValue(":sid", $sid);
+				$sth->bindValue(":hash", md5(uniqid(rand(), true)));
+				$res = $sth->execute();
 				continue;
 			}
 			$msg = str_replace("\n", " ", $msg);
