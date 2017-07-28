@@ -154,7 +154,10 @@ foreach ($row as $data) {
 					continue;
 				}
 				$msg = "/add ".$city;
-			} else if (!isset($messaging['message']['text'])) {
+			} else if (isset($messaging['message']['sticker_id'])) {
+				SendMessage($tmid, "感謝您的支持");
+				continue;
+			}  else if (!isset($messaging['message']['text'])) {
 				SendMessage($tmid, "僅接受文字訊息");
 				continue;
 			} else {
