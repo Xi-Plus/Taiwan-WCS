@@ -215,12 +215,12 @@ foreach ($row as $data) {
 								$res = $sth->execute();
 								SendMessage($tmid, "已開始接收 ".$city." 的通知\n".
 									"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知\n".
-									"現在公告為「".$D["city"][$city]["status"]."」\n".
+									"最新的公告是在".date("Y/m/d H:i", strtotime($D["city"][$city]["time"]))."的「".$D["city"][$city]["status"]."」\n".
 									"/del 停止縣市通知\n".
 									"/show 列出已接收通知縣市的訊息");
 							} else {
 								SendMessage($tmid, $city." 已經接收過了\n".
-									"現在公告為「".$D["city"][$city]["status"]."」\n".
+									"最新的公告是在".date("Y/m/d H:i", strtotime($D["city"][$city]["time"]))."的「".$D["city"][$city]["status"]."」\n".
 									"/del 停止縣市通知\n".
 									"/show 列出已接收通知縣市的訊息");
 							}
