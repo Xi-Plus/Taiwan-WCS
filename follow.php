@@ -290,7 +290,8 @@ foreach ($row as $data) {
 							$msg .= $city."：「".$D["city"][$city]["status"]."」\n";
 						}
 						$msg .= "\n".
-							"/del 停止縣市通知";
+							"/del 停止縣市通知\n".
+							"貼心小提醒：公布了會主動通知，尚未公布多/show幾次也不會提早公布唷，已公布了再怎麼/show也不會改變的唷，有不滿請找相關權責單位";
 						SendMessage($tmid, $msg);
 					}
 					break;
