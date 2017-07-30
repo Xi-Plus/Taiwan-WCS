@@ -1,1 +1,3 @@
 config/config.php
+function/msgparsegen_in.txt
+function/msgparsegen_out.txt
