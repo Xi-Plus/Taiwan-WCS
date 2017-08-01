@@ -17,6 +17,8 @@ function getcityinfo($msg) {
 	return "";
 }
 function mainparse($msg) {
+	global $C;
+	$search_link = $C['fetch'];
 	$do_not_ask_me = "停班停課又不是我能決定的，你連權責單位是誰都不知道，放什麼假";
 	$search_by_yourself = "都能找到這粉專了，想知道的話為什麼不自己去查，懶得查就別放假了";
 	// 1
@@ -64,8 +66,8 @@ function mainparse($msg) {
 		return $do_not_ask_me;
 	}
 	// 12
-	if (preg_match("/(哪裡).*(可以|能).*(查到)/", $msg)) {
-		return "人事行政總處網站";
+	if (preg_match("/(哪裡|哪邊|何處).*(查)/", $msg)) {
+		return $search_link;
 	}
 	// 13
 	if (preg_match("/(hi|hello|不好意思|你好|您好|妳好|嗨|哈囉)/i", $msg)) {
