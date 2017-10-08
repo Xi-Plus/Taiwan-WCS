@@ -85,7 +85,7 @@ foreach ($row as $data) {
 			}
 			$tmid = $row["tmid"];
 			$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `lastread` = :lastread WHERE `tmid` = :tmid");
-			$sth->bindValue(":lastread", "2038-01-19 03:04:17");
+			$sth->bindValue(":lastread", $C['TIME_MAX']);
 			$sth->bindValue(":tmid", $tmid);
 			$res = $sth->execute();
 			if ($res === false) {
@@ -95,13 +95,14 @@ foreach ($row as $data) {
 				continue;
 			}
 			if (isset($messaging['message']['text']) && $messaging['message']['text'] == "/unblock") {
-				$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `mark` = 0 WHERE `tmid` = :tmid");
+				$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `block_expiry` = :block_expiry WHERE `tmid` = :tmid");
+				$sth->bindValue(":block_expiry", date("Y-m-d H:i:s"));
 				$sth->bindValue(":tmid", $tmid);
 				$sth->execute();
 				SendMessage($tmid, "已解除封鎖");
 				continue;
 			}
-			if ($row["mark"] == -1) {
+			if (strtotime($row["block_expiry"]) > time()) {
 				SendMessage($tmid, "您已被程式自動封鎖，因為您先前封鎖本粉專。");
 				continue;
 			}
