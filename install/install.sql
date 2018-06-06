@@ -1,4 +1,6 @@
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -7,7 +9,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
-CREATE TABLE `city` (
+CREATE TABLE `taiwan_wcs_city` (
   `no` tinyint(4) NOT NULL DEFAULT '0',
   `city` varchar(10) NOT NULL,
   `status` text NOT NULL,
@@ -16,7 +18,7 @@ CREATE TABLE `city` (
   `fbmessage` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `city` (`no`, `city`, `status`) VALUES
+INSERT INTO `taiwan_wcs_city` (`no`, `city`, `status`) VALUES
 (11, '南投縣', '無停班停課消息'),
 (12, '嘉義市', '無停班停課消息'),
 (13, '嘉義縣', '無停班停課消息'),
@@ -40,12 +42,12 @@ INSERT INTO `city` (`no`, `city`, `status`) VALUES
 (10, '雲林縣', '無停班停課消息'),
 (15, '高雄市', '無停班停課消息');
 
-CREATE TABLE `cityshortname` (
+CREATE TABLE `taiwan_wcs_cityshortname` (
   `shortname` varchar(10) NOT NULL,
   `fullname` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `cityshortname` (`shortname`, `fullname`) VALUES
+INSERT INTO `taiwan_wcs_cityshortname` (`shortname`, `fullname`) VALUES
 ('南投', '南投縣'),
 ('台中', '臺中市'),
 ('台中市', '臺中市'),
@@ -78,57 +80,57 @@ INSERT INTO `cityshortname` (`shortname`, `fullname`) VALUES
 ('馬祖', '連江縣'),
 ('高雄', '高雄市');
 
-CREATE TABLE `follow` (
+CREATE TABLE `taiwan_wcs_follow` (
   `tmid` varchar(50) NOT NULL,
   `city` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `input` (
+CREATE TABLE `taiwan_wcs_input` (
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `input` text NOT NULL,
   `hash` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `log` (
+CREATE TABLE `taiwan_wcs_log` (
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `message` text NOT NULL,
   `hash` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `msgqueue` (
+CREATE TABLE `taiwan_wcs_msgqueue` (
   `tmid` varchar(255) NOT NULL,
   `message` text NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `hash` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE `user` (
+CREATE TABLE `taiwan_wcs_user` (
   `uid` varchar(255) NOT NULL,
   `tmid` varchar(255) NOT NULL,
   `sid` varchar(255) NOT NULL DEFAULT '',
   `name` varchar(255) NOT NULL,
-  `lastread` timestamp NOT NULL DEFAULT '2038-01-19 03:14:07',
-  `mark` int(11) NOT NULL DEFAULT '0'
+  `lastread` timestamp NOT NULL DEFAULT '2038-01-19 03:14:07'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-ALTER TABLE `city`
+ALTER TABLE `taiwan_wcs_city`
   ADD UNIQUE KEY `name` (`city`);
 
-ALTER TABLE `cityshortname`
+ALTER TABLE `taiwan_wcs_cityshortname`
   ADD UNIQUE KEY `shortname` (`shortname`);
 
-ALTER TABLE `input`
+ALTER TABLE `taiwan_wcs_input`
   ADD UNIQUE KEY `hash` (`hash`);
 
-ALTER TABLE `log`
+ALTER TABLE `taiwan_wcs_log`
   ADD UNIQUE KEY `hash` (`hash`);
 
-ALTER TABLE `msgqueue`
+ALTER TABLE `taiwan_wcs_msgqueue`
   ADD UNIQUE KEY `hash` (`hash`);
 
-ALTER TABLE `user`
+ALTER TABLE `taiwan_wcs_user`
   ADD UNIQUE KEY `tmid` (`tmid`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
