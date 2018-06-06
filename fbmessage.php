@@ -12,7 +12,7 @@ require(__DIR__.'/function/timediff.php');
 
 $time = date("Y-m-d H:i:s");
 
-$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}city` WHERE `fbmessage` = 0 ORDER BY `no`");
+$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}city` WHERE `fbmessage` = 0 AND `test` = 0 ORDER BY `no`");
 $sth->execute();
 $citys = $sth->fetchAll(PDO::FETCH_ASSOC);
 

@@ -22,8 +22,12 @@ if ($html === false) {
 	exit;
 }
 $html = str_replace(array("\r\n", "\n"), "", $html);
+$test = (strpos($html, "測試") !== false);
+if ($test) {
+	echo "*** Test ***\n";
+}
 
-$sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0 WHERE `city` = :city");
+$sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0, `test` = :test WHERE `city` = :city");
 foreach ($D["citylist"] as $city) {
 	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD vAlign=center align=left width=[\"']70%[\"'][^>]*>(.*?)<\/TD>/", $html, $m)) {
 		$status = strip_tags($m[1]);
@@ -35,6 +39,7 @@ foreach ($D["citylist"] as $city) {
 	if ($status != $D["city"][$city]["status"]) {
 		$sthcity->bindValue(":status", $status);
 		$sthcity->bindValue(":time", $time);
+		$sthcity->bindValue(":test", $test);
 		$sthcity->bindValue(":city", $city);
 		$res = $sthcity->execute();
 
@@ -43,6 +48,6 @@ foreach ($D["citylist"] as $city) {
 		}
 	}
 }
-exec("php ".__DIR__."/fbpost.php > /dev/null 2>&1 &");
-exec("php ".__DIR__."/fbmessage.php > /dev/null 2>&1 &");
+// exec("php ".__DIR__."/fbpost.php > /dev/null 2>&1 &");
+// exec("php ".__DIR__."/fbmessage.php > /dev/null 2>&1 &");
 WriteLog("[fetch][info] done");

@@ -6,7 +6,7 @@ if (!in_array(PHP_SAPI, $C["allowsapi"])) {
 
 require(__DIR__.'/function/log.php');
 
-$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}city` WHERE `fbpost` = 0 ORDER BY `no`");
+$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}city` WHERE `fbpost` = 0 AND `test` = 0 ORDER BY `no`");
 $sth->execute();
 $citys = $sth->fetchAll(PDO::FETCH_ASSOC);
 

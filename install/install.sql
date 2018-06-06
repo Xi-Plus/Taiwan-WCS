@@ -15,7 +15,8 @@ CREATE TABLE `taiwan_wcs_city` (
   `status` text NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fbpost` tinyint(1) NOT NULL DEFAULT '1',
-  `fbmessage` tinyint(1) NOT NULL DEFAULT '1'
+  `fbmessage` tinyint(1) NOT NULL DEFAULT '1',
+  `test` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 INSERT INTO `taiwan_wcs_city` (`no`, `city`, `status`) VALUES
