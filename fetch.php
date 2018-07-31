@@ -48,6 +48,9 @@ foreach ($D["citylist"] as $city) {
 		}
 	}
 }
-exec("php ".__DIR__."/fbpost.php > /dev/null 2>&1 &");
-exec("php ".__DIR__."/fbmessage.php > /dev/null 2>&1 &");
+
+$C['enableFBpost'] && exec("php ".__DIR__."/fbpost.php > /dev/null 2>&1 &");
+$C['enableFBmessage'] && exec("php ".__DIR__."/fbmessage.php > /dev/null 2>&1 &");
+$C['enableTGmessage'] && exec("php ".__DIR__."/tgmessage.php > /dev/null 2>&1 &");
+
 WriteLog("[fetch][info] done");

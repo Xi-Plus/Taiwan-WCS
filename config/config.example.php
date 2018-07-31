@@ -1,9 +1,16 @@
 <?php
 
+$C['enableFBpost'] = true;
+$C['enableFBmessage'] = true;
+$C['enableTGmessage'] = true;
+
 $C['FBpageid'] = 'page_id';
 $C['FBpagetoken'] = 'page_token';
 $C['FBWHtoken'] = 'Webhooks_token';
 $C['FBAPI'] = 'https://graph.facebook.com/v2.8/';
+
+$C['TGchatid'] = 'chat_id';
+$C['TGtoken'] = 'access_token';
 
 $C["DBhost"] = 'localhost';
 $C['DBname'] = 'dbname';
