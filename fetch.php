@@ -29,7 +29,7 @@ if ($test) {
 
 $sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0, `test` = :test WHERE `city` = :city");
 foreach ($D["citylist"] as $city) {
-	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD vAlign=center align=left width=[\"']70%[\"'][^>]*>(.*?)<\/TD>/", $html, $m)) {
+	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD [^>]*>(.*?)<\/TD>/", $html, $m)) {
 		$status = strip_tags($m[1]);
 	} else {
 		$status = "無停班停課消息";
