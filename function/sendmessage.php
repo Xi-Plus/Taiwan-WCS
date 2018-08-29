@@ -10,7 +10,7 @@ function SendMessage($tmid, $message) {
 	if (isset($res["error"])) {
 		WriteLog("[smsg][error] res=".json_encode($res)." tmid=".$tmid." msg=".$message);
 		if ($res["error"]["code"] === 230) {
-			$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `fbmessage` = 0 WHERE `tmid` = :tmid");
+			$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");
 			$sth->bindValue(":tmid", $tmid);
 			$sth->execute();
 			WriteLog("[fbmsg][info][unfollow] tmid=".$tmid);

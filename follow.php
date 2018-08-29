@@ -94,18 +94,6 @@ foreach ($row as $data) {
 			if (isset($messaging['read'])) {
 				continue;
 			}
-			if (isset($messaging['message']['text']) && $messaging['message']['text'] == "/unblock") {
-				$sth = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `block_expiry` = :block_expiry WHERE `tmid` = :tmid");
-				$sth->bindValue(":block_expiry", date("Y-m-d H:i:s"));
-				$sth->bindValue(":tmid", $tmid);
-				$sth->execute();
-				SendMessage($tmid, "已解除封鎖");
-				continue;
-			}
-			if (strtotime($row["block_expiry"]) > time()) {
-				SendMessage($tmid, "您已被程式自動封鎖，因為您先前封鎖本粉專。");
-				continue;
-			}
 			if (isset($messaging['message']['attachments']) && $messaging['message']['attachments'][0]['type'] == "location") {
 				$lat = $messaging['message']['attachments'][0]['payload']['coordinates']['lat'];
 				$long = $messaging['message']['attachments'][0]['payload']['coordinates']['long'];
@@ -166,24 +154,52 @@ foreach ($row as $data) {
 				$msg = $messaging['message']['text'];
 			}
 			if ($msg[0] !== "/") {
-				if (($res = msgparse($msg)) !== "") {
-					SendMessage($tmid, $res);
-				} else {
-					SendMessage($tmid, "本粉專由程式自動運作，無法回應問題\n\n".
-						"常見問題解答：\n".
-						"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n".
-						"Q: 為何尚未公布　A: 問各縣市政府\n".
-						"Q: 何時公布　A: 問各縣市政府\n".
-						"Q: 為何不放假　A: 問各縣市政府\n".
-						"本粉專非政府機關所有\n\n".
-						"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n".
-						"顯示所有命令輸入 /help");
-				}
 				$sth = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}receive` (`msg`, `sid`, `hash`) VALUES (:msg, :sid, :hash)");
 				$sth->bindValue(":msg", $msg);
 				$sth->bindValue(":sid", $sid);
 				$sth->bindValue(":hash", md5(uniqid(rand(), true)));
 				$res = $sth->execute();
+
+				if (($res = msgparse($msg)) !== "") {
+					SendMessage($tmid, $res);
+				} else {
+					$sth = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}spam` (`tmid`) VALUES (:tmid)");
+					$sth->bindValue(":tmid", $tmid);
+					$res = $sth->execute();
+
+					$sth = $G["db"]->prepare("SELECT COUNT(*) AS `count` FROM `{$C['DBTBprefix']}spam` WHERE `tmid` = :tmid AND `timestamp` > :timestamp");
+					$sth->bindValue(":tmid", $tmid);
+					$sth->bindValue(":timestamp", date("Y-m-d H:i:s", time()-86400));
+					$res = $sth->execute();
+					$count = $sth->fetch()[0];
+
+					if ($count >= 5) {
+						$res = "因為濫用本粉專自動應答服務的資源，你將被封鎖。";
+						SendMessage($tmid, $res);
+
+						$post = array(
+							"user" => substr($tmid, 2),
+							"access_token" => $C['FBpagetoken']
+						);
+						$res = cURL($C['FBAPI']."/me/blocked", $post);
+
+						$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");
+						$sth->bindValue(":tmid", $tmid);
+						$res = $sth->execute();
+					} else {
+						$res = "本粉專由程式自動運作，無法回應問題\n".
+							"持續發送無意義訊息濫用本粉專資源將遭封鎖\n\n".
+							"常見問題解答：\n".
+							"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n".
+							"Q: 為何尚未公布　A: 問各縣市政府\n".
+							"Q: 何時公布　A: 問各縣市政府\n".
+							"Q: 為何不放假　A: 問各縣市政府\n".
+							"本粉專非政府機關所有\n\n".
+							"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n".
+							"顯示所有命令輸入 /help";
+						SendMessage($tmid, $res);
+					}
+				}
 				continue;
 			}
 			$msg = str_replace("\n", " ", $msg);
