@@ -16,6 +16,7 @@ CREATE TABLE `taiwan_wcs_city` (
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `fbpost` tinyint(1) NOT NULL DEFAULT '1',
   `fbmessage` tinyint(1) NOT NULL DEFAULT '1',
+  `tgmessage` tinyint(1) NOT NULL DEFAULT '0',
   `test` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -103,6 +104,11 @@ CREATE TABLE `taiwan_wcs_msgqueue` (
   `message` text NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `hash` varchar(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `taiwan_wcs_spam` (
+  `tmid` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `taiwan_wcs_user` (
