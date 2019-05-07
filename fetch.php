@@ -43,6 +43,7 @@ foreach ($D["citylist"] as $city) {
 		$sthcity->bindValue(":city", $city);
 		$res = $sthcity->execute();
 
+		WriteLog("[fetch][info][updsta] city=" . $city . " status=form " . $D["city"][$city]["status"] . " to " . $status);
 		if ($res === false) {
 			WriteLog("[fetch][error][updsta] city=" . $city . " status=" . $status);
 		}
