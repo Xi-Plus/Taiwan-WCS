@@ -1,14 +1,14 @@
 <?php
-require(__DIR__.'/config/config.php');
+require __DIR__ . '/config/config.php';
 if (!in_array(PHP_SAPI, $C["allowsapi"])) {
 	exit("No permission");
 }
 
-require(__DIR__.'/function/curl.php');
-require(__DIR__.'/function/log.php');
-require(__DIR__.'/function/sendmessage.php');
-require(__DIR__.'/function/getlist.php');
-require(__DIR__.'/function/msgparse.php');
+require __DIR__ . '/function/curl.php';
+require __DIR__ . '/function/log.php';
+require __DIR__ . '/function/sendmessage.php';
+require __DIR__ . '/function/getlist.php';
+require __DIR__ . '/function/msgparse.php';
 
 $sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}input` ORDER BY `time` ASC");
 $res = $sth->execute();
@@ -20,7 +20,7 @@ foreach ($row as $data) {
 }
 function GetTmid() {
 	global $C, $G;
-	$res = cURL($C['FBAPI']."me/conversations?fields=participants,updated_time&access_token=".$C['FBpagetoken']);
+	$res = cURL($C['FBAPI'] . "me/conversations?fields=participants,updated_time&access_token=" . $C['FBpagetoken']);
 	$updated_time = file_get_contents("data/updated_time.txt");
 	$newesttime = $updated_time;
 	while (true) {
@@ -65,8 +65,8 @@ foreach ($row as $data) {
 			$row = $sth->fetch(PDO::FETCH_ASSOC);
 			if ($row === false) {
 				GetTmid();
-				$mmid = "m_".$messaging['message']['mid'];
-				$res = cURL($C['FBAPI'].$mmid."?fields=from&access_token=".$C['FBpagetoken']);
+				$mmid = "m_" . $messaging['message']['mid'];
+				$res = cURL($C['FBAPI'] . $mmid . "?fields=from&access_token=" . $C['FBpagetoken']);
 				$res = json_decode($res, true);
 				$uid = $res["from"]["id"];
 				$sthsid = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}user` SET `sid` = :sid WHERE `uid` = :uid");
@@ -77,10 +77,10 @@ foreach ($row as $data) {
 				$sth->execute();
 				$row = $sth->fetch(PDO::FETCH_ASSOC);
 				if ($row === false) {
-					WriteLog("[follow][error][uid404] sid=".$sid." uid=".$uid);
+					WriteLog("[follow][error][uid404] sid=" . $sid . " uid=" . $uid);
 					continue;
 				} else {
-					WriteLog("[follow][info][newuser] sid=".$sid." uid=".$uid);
+					WriteLog("[follow][info][newuser] sid=" . $sid . " uid=" . $uid);
 				}
 			}
 			$tmid = $row["tmid"];
@@ -89,7 +89,7 @@ foreach ($row as $data) {
 			$sth->bindValue(":tmid", $tmid);
 			$res = $sth->execute();
 			if ($res === false) {
-				WriteLog("[follow][error][updlr] tmid=".$tmid);
+				WriteLog("[follow][error][updlr] tmid=" . $tmid);
 			}
 			if (isset($messaging['read'])) {
 				continue;
@@ -97,7 +97,7 @@ foreach ($row as $data) {
 			if (isset($messaging['message']['attachments']) && $messaging['message']['attachments'][0]['type'] == "location") {
 				$lat = $messaging['message']['attachments'][0]['payload']['coordinates']['lat'];
 				$long = $messaging['message']['attachments'][0]['payload']['coordinates']['long'];
-				$res = file_get_contents("http://maps.google.com/maps/api/geocode/json?latlng=".$lat.",".$long."&language=zh-TW");
+				$res = file_get_contents("http://maps.google.com/maps/api/geocode/json?latlng=" . $lat . "," . $long . "&language=zh-TW");
 				if ($res === false) {
 					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
 					WriteLog("[follow][error] fetch location 1");
@@ -111,7 +111,7 @@ foreach ($row as $data) {
 				}
 				if ($res["status"] !== "OK") {
 					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
-					WriteLog("[follow][error] fetch location 3 ".$res["error_message"]);
+					WriteLog("[follow][error] fetch location 3 " . $res["error_message"]);
 					continue;
 				}
 				$city = "";
@@ -136,18 +136,18 @@ foreach ($row as $data) {
 						break;
 					}
 				}
-				SendMessage($tmid, "你的位置是：".$address."\n".
-					"辨識為 ".$city);
+				SendMessage($tmid, "你的位置是：" . $address . "\n" .
+					"辨識為 " . $city);
 				if ($city === "") {
 					SendMessage($tmid, "辨識位置失敗，請稍後再試或輸入 /add 手動設定");
 					WriteLog("[follow][error] fetch location 4");
 					continue;
 				}
-				$msg = "/add ".$city;
+				$msg = "/add " . $city;
 			} else if (isset($messaging['message']['sticker_id'])) {
 				SendMessage($tmid, "感謝您的支持");
 				continue;
-			}  else if (!isset($messaging['message']['text'])) {
+			} else if (!isset($messaging['message']['text'])) {
 				SendMessage($tmid, "僅接受文字訊息");
 				continue;
 			} else {
@@ -169,7 +169,7 @@ foreach ($row as $data) {
 
 					$sth = $G["db"]->prepare("SELECT COUNT(*) AS `count` FROM `{$C['DBTBprefix']}spam` WHERE `tmid` = :tmid AND `timestamp` > :timestamp");
 					$sth->bindValue(":tmid", $tmid);
-					$sth->bindValue(":timestamp", date("Y-m-d H:i:s", time()-86400));
+					$sth->bindValue(":timestamp", date("Y-m-d H:i:s", time() - 86400));
 					$res = $sth->execute();
 					$count = $sth->fetch()[0];
 
@@ -179,23 +179,23 @@ foreach ($row as $data) {
 
 						$post = array(
 							"user" => substr($tmid, 2),
-							"access_token" => $C['FBpagetoken']
+							"access_token" => $C['FBpagetoken'],
 						);
-						$res = cURL($C['FBAPI']."/me/blocked", $post);
+						$res = cURL($C['FBAPI'] . "/me/blocked", $post);
 
 						$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");
 						$sth->bindValue(":tmid", $tmid);
 						$res = $sth->execute();
 					} else {
-						$res = "本粉專由程式自動運作，無法回應問題\n".
-							"持續發送無意義訊息濫用本粉專資源將遭封鎖\n\n".
-							"常見問題解答：\n".
-							"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n".
-							"Q: 為何尚未公布　A: 問各縣市政府\n".
-							"Q: 何時公布　A: 問各縣市政府\n".
-							"Q: 為何不放假　A: 問各縣市政府\n".
-							"本粉專非政府機關所有\n\n".
-							"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n".
+						$res = "本粉專由程式自動運作，無法回應問題\n" .
+							"持續發送無意義訊息濫用本粉專資源將遭封鎖\n\n" .
+							"常見問題解答：\n" .
+							"Q: 是否宣布、是否放假　A: 自行上行政院人事行政總處網站查看\n" .
+							"Q: 為何尚未公布　A: 問各縣市政府\n" .
+							"Q: 何時公布　A: 問各縣市政府\n" .
+							"Q: 為何不放假　A: 問各縣市政府\n" .
+							"本粉專非政府機關所有\n\n" .
+							"若尚未宣布，您可以輸入 /add 設定您想知道的縣市，宣布後會立即通知\n" .
 							"顯示所有命令輸入 /help";
 						SendMessage($tmid, $res);
 					}
@@ -208,17 +208,17 @@ foreach ($row as $data) {
 			switch ($cmd[0]) {
 				case '/add':
 					if (!isset($cmd[1])) {
-						$msg = "輸入 /add [縣市] 接收此縣市的通知\n\n".
-							"可用的縣市有：".implode("、", $D["citylist"])."\n\n".
-							"範例： /add ".$D["citylist"][0];
+						$msg = "輸入 /add [縣市] 接收此縣市的通知\n\n" .
+						"可用的縣市有：" . implode("、", $D["citylist"]) . "\n\n" .
+							"範例： /add " . $D["citylist"][0];
 						SendMessage($tmid, $msg);
 						break;
 					}
-					if (isset($cmd[$C['add_limit']+1])) {
+					if (isset($cmd[$C['add_limit'] + 1])) {
 						SendMessage($tmid, "一次命令最多只能接收 {$C['add_limit']} 個縣市，請分次輸入");
 						break;
 					}
-					for ($i=1; isset($cmd[$i]); $i++) {
+					for ($i = 1;isset($cmd[$i]); $i++) {
 						$city = $cmd[$i];
 						if (isset($D["cityshortname"][$city])) {
 							$city = $D["cityshortname"][$city];
@@ -230,19 +230,19 @@ foreach ($row as $data) {
 								$sth->bindValue(":tmid", $tmid);
 								$sth->bindValue(":city", $city);
 								$res = $sth->execute();
-								SendMessage($tmid, "已開始接收 ".$city." 的通知\n".
-									"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知\n".
-									"最新的公告是在".date("Y/m/d H:i", strtotime($D["city"][$city]["time"]))."的「".$D["city"][$city]["status"]."」\n".
-									"/del 停止縣市通知\n".
+								SendMessage($tmid, "已開始接收 " . $city . " 的通知\n" .
+									"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知\n" .
+									"最新的公告是在" . date("Y/m/d H:i", strtotime($D["city"][$city]["time"])) . "的「" . $D["city"][$city]["status"] . "」\n" .
+									"/del 停止縣市通知\n" .
 									"/show 列出已接收通知縣市的訊息");
 							} else {
-								SendMessage($tmid, $city." 已經接收過了\n".
-									"最新的公告是在".date("Y/m/d H:i", strtotime($D["city"][$city]["time"]))."的「".$D["city"][$city]["status"]."」\n".
-									"/del 停止縣市通知\n".
+								SendMessage($tmid, $city . " 已經接收過了\n" .
+									"最新的公告是在" . date("Y/m/d H:i", strtotime($D["city"][$city]["time"])) . "的「" . $D["city"][$city]["status"] . "」\n" .
+									"/del 停止縣市通知\n" .
 									"/show 列出已接收通知縣市的訊息");
 							}
 						} else {
-							$msg = "找不到 ".$city." ，縣市名必須用字完全一樣\n".
+							$msg = "找不到 " . $city . " ，縣市名必須用字完全一樣\n" .
 								"輸入 /add 查看可用的縣市";
 							SendMessage($tmid, $msg);
 						}
@@ -254,11 +254,11 @@ foreach ($row as $data) {
 					if (!isset($cmd[1])) {
 						$msg = "輸入 /del [縣市] 取消接收此縣市通知\n\n";
 						if (count($user) == 0) {
-							$msg .= "沒有接收任何縣市通知\n".
+							$msg .= "沒有接收任何縣市通知\n" .
 								"輸入 /add [縣市] 開始接收縣市通知";
 						} else {
-							$msg .= "接收的縣市有：".implode("、", $user)."\n\n".
-								"範例： /del ".$user[0];
+							$msg .= "接收的縣市有：" . implode("、", $user) . "\n\n" .
+								"範例： /del " . $user[0];
 						}
 						SendMessage($tmid, $msg);
 						break;
@@ -268,96 +268,96 @@ foreach ($row as $data) {
 						$city = $D["cityshortname"][$city];
 					}
 					if (!isset($D["city"][$city])) {
-						SendMessage($tmid, "找不到 ".$city." ，縣市名必須用字完全一樣");
+						SendMessage($tmid, "找不到 " . $city . " ，縣市名必須用字完全一樣");
 					} else if (in_array($city, $user)) {
 						$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid AND `city` = :city");
 						$sth->bindValue(":tmid", $tmid);
 						$sth->bindValue(":city", $city);
 						$res = $sth->execute();
-						SendMessage($tmid, "已停止接收 ".$city." 的通知");
+						SendMessage($tmid, "已停止接收 " . $city . " 的通知");
 					} else {
-						SendMessage($tmid, "並沒有接收 ".$city." 的通知");
+						SendMessage($tmid, "並沒有接收 " . $city . " 的通知");
 					}
 					break;
 
 				case '/list':
 					$user = getuserlist($tmid);
 					if (count($user) == 0) {
-						SendMessage($tmid, "沒有接收任何縣市\n".
+						SendMessage($tmid, "沒有接收任何縣市\n" .
 							"輸入 /add [縣市] 開始接收縣市通知");
 					} else {
 						$msg = "已接收以下縣市通知\n";
 						foreach ($user as $city) {
-							$msg .= $city."\n";
+							$msg .= $city . "\n";
 						}
-						$msg .= "\n".
+						$msg .= "\n" .
 							"/del 停止縣市通知";
 						SendMessage($tmid, $msg);
 					}
 					break;
-				
+
 				case '/show':
 					$user = getuserlist($tmid);
 					if (count($user) == 0) {
-						SendMessage($tmid, "沒有接收任何縣市\n".
+						SendMessage($tmid, "沒有接收任何縣市\n" .
 							"輸入 /add [縣市] 開始接收縣市通知");
 					} else {
 						$msg = "";
 						foreach ($user as $city) {
-							$msg .= $city."：「".$D["city"][$city]["status"]."」\n";
+							$msg .= $city . "：「" . $D["city"][$city]["status"] . "」\n";
 						}
-						$msg .= "\n".
-							"/del 停止縣市通知\n".
+						$msg .= "\n" .
+							"/del 停止縣市通知\n" .
 							"貼心小提醒：公布了會主動通知，尚未公布多/show幾次也不會提早公布唷，已公布了再怎麼/show也不會改變的唷，有不滿請找相關權責單位";
 						SendMessage($tmid, $msg);
 					}
 					break;
-				
+
 				case '/help':
 					if (isset($cmd[2])) {
-						$msg = "參數過多\n".
+						$msg = "參數過多\n" .
 							"必須給出一個參數為指令的名稱";
 					} else if (isset($cmd[1])) {
 						switch ($cmd[1]) {
 							case 'add':
-								$msg = "/add 顯示所有區域\n".
+								$msg = "/add 顯示所有區域\n" .
 									"/add [縣市] 接收縣市通知";
 								break;
-							
+
 							case 'del':
 								$msg = "/del [縣市] 停止此縣市通知";
 								break;
-							
+
 							case 'list':
 								$msg = "/list 列出已接收通知的縣市";
 								break;
-							
+
 							case 'show':
 								$msg = "/show 列出已接收通知縣市的資料";
 								break;
-							
+
 							case 'help':
 								$msg = "/help 顯示所有命令";
 								break;
-							
+
 							default:
 								$msg = "查無此指令";
 								break;
 						}
 					} else {
-						$msg = "可用命令\n".
-						"/add 接收縣市通知\n".
-						"/del 停止縣市通知\n".
-						"/list 列出已接收通知的縣市\n".
-						"/show 列出已接收通知縣市的訊息\n".
-						"/help 顯示所有命令\n\n".
-						"/help [命令] 顯示命令的詳細用法";
+						$msg = "可用命令\n" .
+							"/add 接收縣市通知\n" .
+							"/del 停止縣市通知\n" .
+							"/list 列出已接收通知的縣市\n" .
+							"/show 列出已接收通知縣市的訊息\n" .
+							"/help 顯示所有命令\n\n" .
+							"/help [命令] 顯示命令的詳細用法";
 					}
 					SendMessage($tmid, $msg);
 					break;
-				
+
 				default:
-					SendMessage($tmid, "無法辨識命令\n".
+					SendMessage($tmid, "無法辨識命令\n" .
 						"輸入 /help 取得可用命令");
 					break;
 			}

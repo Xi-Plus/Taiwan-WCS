@@ -25,7 +25,7 @@ function getuserlist($tmid) {
 	$row = $sth->fetchAll(PDO::FETCH_ASSOC);
 	$data = array();
 	foreach ($row as $temp) {
-		$data []= $temp["city"];
+		$data[] = $temp["city"];
 	}
 	return $data;
 }

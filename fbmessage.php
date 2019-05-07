@@ -1,14 +1,14 @@
 <?php
-require(__DIR__.'/config/config.php');
+require __DIR__ . '/config/config.php';
 if (!in_array(PHP_SAPI, $C["allowsapi"])) {
 	exit("No permission");
 }
 
-require(__DIR__.'/function/log.php');
-require(__DIR__.'/function/curl.php');
-require(__DIR__.'/function/sendmessage.php');
-require(__DIR__.'/function/getlist.php');
-require(__DIR__.'/function/timediff.php');
+require __DIR__ . '/function/log.php';
+require __DIR__ . '/function/curl.php';
+require __DIR__ . '/function/sendmessage.php';
+require __DIR__ . '/function/getlist.php';
+require __DIR__ . '/function/timediff.php';
 
 $time = date("Y-m-d H:i:s");
 
@@ -20,28 +20,28 @@ $sthfol = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}follow` WHERE `cit
 $sthok = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `fbmessage` = '1' WHERE `city` = :city");
 $sthmsg = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}msgqueue` (`tmid`, `message`, `time`, `hash`) VALUES (:tmid, :message, :time, :hash)");
 foreach ($citys as $city) {
-	$msg = date("Y/m/d H:i")."\n".$city["city"]." 更新為「".$city["status"]."」\n".
-			"資料來源：行政院人事行政總處";
+	$msg = date("Y/m/d H:i") . "\n" . $city["city"] . " 更新為「" . $city["status"] . "」\n" .
+		"資料來源：行政院人事行政總處";
 
 	$sthfol->bindValue(":city", $city["city"]);
 	$sthfol->execute();
 	$users = $sthfol->fetchAll(PDO::FETCH_ASSOC);
 	foreach ($users as $user) {
-		$hash = md5(json_encode(array("tmid"=>$user["tmid"], "message"=>$msg, "time"=>$time)));
+		$hash = md5(json_encode(array("tmid" => $user["tmid"], "message" => $msg, "time" => $time)));
 		$sthmsg->bindValue(":tmid", $user["tmid"]);
 		$sthmsg->bindValue(":message", $msg);
 		$sthmsg->bindValue(":time", $time);
 		$sthmsg->bindValue(":hash", $hash);
 		$res = $sthmsg->execute();
 		if ($res === false) {
-			WriteLog("[fbmsg][error][insque] tmid=".$user["tmid"]." msg=".$msg." ".json_encode($sthmsg->errorInfo()));
+			WriteLog("[fbmsg][error][insque] tmid=" . $user["tmid"] . " msg=" . $msg . " " . json_encode($sthmsg->errorInfo()));
 		}
 	}
 
 	$sthok->bindValue(":city", $city["city"]);
 	$res = $sthok->execute();
 	if ($res === false) {
-		WriteLog("[fbmsg][error][updcit] city=".$city["name"]);
+		WriteLog("[fbmsg][error][updcit] city=" . $city["name"]);
 	}
 }
 
@@ -60,7 +60,7 @@ foreach ($row as $msg) {
 		$sthdel->bindValue(":hash", $msg["hash"]);
 		$res = $sthdel->execute();
 		if ($res === false) {
-			WriteLog("[fbmsg][error][delque] hash=".$msg["hash"]);
+			WriteLog("[fbmsg][error][delque] hash=" . $msg["hash"]);
 		}
 	}
 }

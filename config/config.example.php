@@ -22,10 +22,10 @@ $C['fetch'] = 'https://www.dgpa.gov.tw/typh/daily/nds.html';
 
 $C['add_limit'] = 5;
 
-$C['LogKeep'] = 86400*7;
+$C['LogKeep'] = 86400 * 7;
 
 $C["allowsapi"] = array("cli");
 
-$G["db"] = new PDO ('mysql:host='.$C["DBhost"].';dbname='.$C["DBname"].';charset=utf8', $C["DBuser"], $C["DBpass"]);
+$G["db"] = new PDO('mysql:host=' . $C["DBhost"] . ';dbname=' . $C["DBname"] . ';charset=utf8', $C["DBuser"], $C["DBpass"]);
 
 date_default_timezone_set("Asia/Taipei");
