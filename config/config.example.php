@@ -18,7 +18,7 @@ $C['DBuser'] = 'user';
 $C['DBpass'] = 'pass';
 $C['DBTBprefix'] = 'taiwan_wcs_';
 
-$C['fetch'] = 'https://www.dgpa.gov.tw/typh/daily/nds.html';
+$C['fetch'] = 'https://alerts.ncdr.nat.gov.tw/RssAtomFeed.ashx?AlertType=33';
 
 $C['add_limit'] = 5;
 

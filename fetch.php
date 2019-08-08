@@ -10,27 +10,28 @@ require __DIR__ . '/function/getlist.php';
 
 $time = date("Y-m-d H:i:s");
 
-$context = array(
-	"ssl" => array(
-		"verify_peer" => false,
-		"verify_peer_name" => false,
-	),
-);
-$html = file_get_contents($C["fetch"], false, stream_context_create($context));
+echo "fetching from {$C["fetch"]}\n";
+$html = file_get_contents($C["fetch"]);
 if ($html === false) {
 	WriteLog("fetch fail");
 	exit;
 }
-$html = str_replace(array("\r\n", "\n"), "", $html);
-$test = (strpos($html, "測試") !== false);
-if ($test) {
-	echo "*** Test ***\n";
+
+$obj = simplexml_load_string($html);
+$data = [];
+foreach ($obj->entry as $row) {
+	$msg = $row->summary->__toString();
+	if (preg_match('/^\[停班停課通知\](.+?):(.+)$/', $msg, $m)) {
+		$data[$m[1]] = $m[2];
+	}
 }
+
+$test = false;
 
 $sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0, `test` = :test WHERE `city` = :city");
 foreach ($D["citylist"] as $city) {
-	if (preg_match("/{$city}<\/FONT><\/TD>\s*<TD [^>]*>(.*?)<\/TD>/", $html, $m)) {
-		$status = strip_tags($m[1]);
+	if (isset($data[$city])) {
+		$status = $data[$city];
 	} else {
 		$status = "無停班停課消息";
 	}
