@@ -20,7 +20,7 @@ $sthfol = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}follow` WHERE `cit
 $sthok = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `fbmessage` = '1' WHERE `city` = :city");
 $sthmsg = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}msgqueue` (`tmid`, `message`, `time`, `hash`) VALUES (:tmid, :message, :time, :hash)");
 foreach ($citys as $city) {
-	$msg = date("Y/m/d H:i") . "\n" . $city["city"] . " 更新為「" . $city["status"] . "」\n" .
+	$msg = date("Y/m/d H:i") . "\n" . $city["status"] . "\n" .
 		"資料來源：行政院人事行政總處";
 
 	$sthfol->bindValue(":city", $city["city"]);

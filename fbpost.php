@@ -16,7 +16,7 @@ if (count($citys) === 0) {
 
 $msg = date("Y/m/d H:i") . "\n\n";
 foreach ($citys as $city) {
-	$msg .= $city["city"] . " 更新為「" . $city["status"] . "」\n\n";
+	$msg .= $city["status"] . "\n\n";
 }
 $msg .= "資料來源：行政院人事行政總處";
 echo $msg . "\n";
