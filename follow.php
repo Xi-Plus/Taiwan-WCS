@@ -182,6 +182,7 @@ foreach ($row as $data) {
 							"access_token" => $C['FBpagetoken'],
 						);
 						$res = cURL($C['FBAPI'] . "/me/blocked", $post);
+						WriteLog("[follow][block] ".$res);
 
 						$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");
 						$sth->bindValue(":tmid", $tmid);
