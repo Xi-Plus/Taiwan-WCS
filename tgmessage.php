@@ -14,31 +14,28 @@ if (count($msgs) === 0) {
 	exit("no change\n");
 }
 
-$text = '';
+$sthok = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}msg` SET `tgmessage` = '1' WHERE `city` = :city AND `msg` = :msg");
 foreach ($msgs as $msg) {
-	$text .= date("Y/m/d H:i", strtotime($msg['time'])) . " " . $msg['msg'] . "\n";
-}
-echo $text . "\n";
+	$text = date("Y/m/d H:i", strtotime($msg['time'])) . " " . $msg['msg'] . "\n";
+	echo $text;
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot" . $C['TGtoken'] . "/sendMessage");
-curl_setopt($ch, CURLOPT_POST, true);
-$post = array(
-	"chat_id" => $C["TGchatid"],
-	"disable_web_page_preview" => true,
-	"text" => $text,
-);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$res = curl_exec($ch);
-curl_close($ch);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot" . $C['TGtoken'] . "/sendMessage");
+	curl_setopt($ch, CURLOPT_POST, true);
+	$post = array(
+		"chat_id" => $C["TGchatid"],
+		"disable_web_page_preview" => true,
+		"text" => $text,
+	);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	$res = curl_exec($ch);
+	curl_close($ch);
 
-$res = json_decode($res, true);
-if (!isset($res["ok"])) {
-	WriteLog("[tgmsg][error] res=" . json_encode($res));
-} else {
-	$sthok = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}msg` SET `tgmessage` = '1' WHERE `city` = :city AND `msg` = :msg");
-	foreach ($msgs as $msg) {
+	$res = json_decode($res, true);
+	if (!isset($res["ok"])) {
+		WriteLog("[tgmsg][error] res=" . json_encode($res));
+	} else {
 		$sthok->bindValue(":city", $msg["city"]);
 		$sthok->bindValue(":msg", $msg["msg"]);
 		$res = $sthok->execute();
