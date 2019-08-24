@@ -18,16 +18,16 @@ if ($html === false) {
 }
 
 $obj = simplexml_load_string($html);
-$data = [];
+$newrecord = [];
+foreach ($D["citylist"] as $city) {
+	$newrecord[$city] = [];
+}
 foreach ($obj->entry as $row) {
 	$msg = $row->summary->__toString();
 	if (preg_match('/^\[停班停課通知\](.+?(?:縣|市))(.+)$/', $msg, $m)) {
 		echo "$m[1]$m[2]\n";
-		if (!isset($data[$m[1]])) {
-			$data[$m[1]] = [];
-		}
-		if (!in_array($m[1] . $m[2], $data[$m[1]])) {
-			$data[$m[1]][] = $m[1] . $m[2];
+		if (!in_array($m[1] . $m[2], $newrecord[$m[1]])) {
+			$newrecord[$m[1]][] = $m[1] . $m[2];
 		}
 	}
 }
@@ -36,25 +36,29 @@ echo "-----------------\n";
 
 $test = false;
 
-$sthcity = $G["db"]->prepare("UPDATE `{$C['DBTBprefix']}city` SET `status` = :status, `time` = :time, `fbpost` = 0, `fbmessage` = 0, `test` = :test WHERE `city` = :city");
+$oldrecord = [];
 foreach ($D["citylist"] as $city) {
-	if (isset($data[$city])) {
-		$status = implode("\n", $data[$city]);
-	} else {
-		$status = $city . ":無停班停課消息";
-	}
-	echo $status . "\n";
+	$oldrecord[$city] = [];
+}
+$sth = $G["db"]->prepare("SELECT * FROM `{$C['DBTBprefix']}msg`");
+$sth->execute();
+$rows = $sth->fetchAll(PDO::FETCH_ASSOC);
+foreach ($rows as $row) {
+	$oldrecord[$row['city']][] = $row['msg'];
+}
 
-	if ($status != $D["city"][$city]["status"]) {
-		$sthcity->bindValue(":status", $status);
-		$sthcity->bindValue(":time", $time);
-		$sthcity->bindValue(":test", $test);
-		$sthcity->bindValue(":city", $city);
-		$res = $sthcity->execute();
+$sthcity = $G["db"]->prepare("INSERT INTO `{$C['DBTBprefix']}msg` (`city`, `msg`) VALUES (:city, :msg)");
+foreach ($D["citylist"] as $city) {
+	foreach ($newrecord[$city] as $msg) {
+		if (!in_array($msg, $oldrecord[$city])) {
+			$sthcity->bindValue(":city", $city);
+			$sthcity->bindValue(":msg", $msg);
+			$res = $sthcity->execute();
 
-		WriteLog("[fetch][info][updsta] city=" . $city . " status=form " . $D["city"][$city]["status"] . " to " . $status);
-		if ($res === false) {
-			WriteLog("[fetch][error][updsta] city=" . $city . " status=" . $status);
+			WriteLog("[fetch][info][insert] city=" . $city . " status=" . $msg);
+			if ($res === false) {
+				WriteLog("[fetch][error][insert] city=" . $city . " status=" . $status);
+			}
 		}
 	}
 }

@@ -11,38 +11,32 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `taiwan_wcs_city` (
   `no` tinyint(4) NOT NULL DEFAULT '0',
-  `city` varchar(10) NOT NULL,
-  `status` text NOT NULL,
-  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `fbpost` tinyint(1) NOT NULL DEFAULT '1',
-  `fbmessage` tinyint(1) NOT NULL DEFAULT '1',
-  `tgmessage` tinyint(1) NOT NULL DEFAULT '0',
-  `test` tinyint(1) NOT NULL DEFAULT '0'
+  `city` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `taiwan_wcs_city` (`no`, `city`, `status`) VALUES
-(11, '南投縣', '無停班停課消息'),
-(12, '嘉義市', '無停班停課消息'),
-(13, '嘉義縣', '無停班停課消息'),
-(1, '基隆市', '無停班停課消息'),
-(17, '宜蘭縣', '無停班停課消息'),
-(16, '屏東縣', '無停班停課消息'),
-(9, '彰化縣', '無停班停課消息'),
-(3, '新北市', '無停班停課消息'),
-(5, '新竹市', '無停班停課消息'),
-(6, '新竹縣', '無停班停課消息'),
-(4, '桃園市', '無停班停課消息'),
-(20, '澎湖縣', '無停班停課消息'),
-(8, '臺中市', '無停班停課消息'),
-(2, '臺北市', '無停班停課消息'),
-(14, '臺南市', '無停班停課消息'),
-(19, '臺東縣', '無停班停課消息'),
-(18, '花蓮縣', '無停班停課消息'),
-(7, '苗栗縣', '無停班停課消息'),
-(21, '連江縣', '無停班停課消息'),
-(22, '金門縣', '無停班停課消息'),
-(10, '雲林縣', '無停班停課消息'),
-(15, '高雄市', '無停班停課消息');
+INSERT INTO `taiwan_wcs_city` (`no`, `city`) VALUES
+(11, '南投縣'),
+(12, '嘉義市'),
+(13, '嘉義縣'),
+(1, '基隆市'),
+(17, '宜蘭縣'),
+(16, '屏東縣'),
+(9, '彰化縣'),
+(3, '新北市'),
+(5, '新竹市'),
+(6, '新竹縣'),
+(4, '桃園市'),
+(20, '澎湖縣'),
+(8, '臺中市'),
+(2, '臺北市'),
+(14, '臺南市'),
+(19, '臺東縣'),
+(18, '花蓮縣'),
+(7, '苗栗縣'),
+(21, '連江縣'),
+(22, '金門縣'),
+(10, '雲林縣'),
+(15, '高雄市');
 
 CREATE TABLE `taiwan_wcs_cityshortname` (
   `shortname` varchar(10) NOT NULL,
@@ -98,6 +92,15 @@ CREATE TABLE `taiwan_wcs_log` (
   `message` text NOT NULL,
   `hash` varchar(32) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `taiwan_wcs_msg` (
+  `city` varchar(10) COLLATE utf8_bin NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `msg` varchar(255) COLLATE utf8_bin NOT NULL,
+  `fbpost` tinyint(1) DEFAULT '0',
+  `fbmessage` tinyint(1) NOT NULL DEFAULT '0',
+  `tgmessage` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `taiwan_wcs_msgqueue` (
   `tmid` varchar(255) NOT NULL,

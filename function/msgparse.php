@@ -11,7 +11,7 @@ function getcityinfo($msg) {
 		if (isset($D["cityshortname"][$city])) {
 			$city = $D["cityshortname"][$city];
 		}
-		return $city . "最新的公告是在" . date("Y/m/d H:i", strtotime($D["city"][$city]["time"])) . "的「" . $D["city"][$city]["status"] . "」\n" .
+		return $D["city"][$city]["status"] . "\n" .
 			"欲接收訊息通知請輸入 /add " . $city . " （包含斜線跟空白）";
 	}
 	return "";

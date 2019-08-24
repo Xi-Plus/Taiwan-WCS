@@ -182,7 +182,7 @@ foreach ($row as $data) {
 							"access_token" => $C['FBpagetoken'],
 						);
 						$res = cURL($C['FBAPI'] . "/me/blocked", $post);
-						WriteLog("[follow][block] ".$res);
+						WriteLog("[follow][block] " . $res);
 
 						$sth = $G["db"]->prepare("DELETE FROM `{$C['DBTBprefix']}follow` WHERE `tmid` = :tmid");
 						$sth->bindValue(":tmid", $tmid);
@@ -233,12 +233,14 @@ foreach ($row as $data) {
 								$res = $sth->execute();
 								SendMessage($tmid, "已開始接收 " . $city . " 的通知\n" .
 									"當人事行政總處網頁有你設定縣市的內容更新時，將會主動發送訊息告知\n" .
-									"最新的公告是在" . date("Y/m/d H:i", strtotime($D["city"][$city]["time"])) . "的「" . $D["city"][$city]["status"] . "」\n" .
+									"最近的公告有：\n" .
+									$D["city"][$city]["status"] .
 									"/del 停止縣市通知\n" .
 									"/show 列出已接收通知縣市的訊息");
 							} else {
 								SendMessage($tmid, $city . " 已經接收過了\n" .
-									"最新的公告是在" . date("Y/m/d H:i", strtotime($D["city"][$city]["time"])) . "的「" . $D["city"][$city]["status"] . "」\n" .
+									"最近的公告有：\n" .
+									$D["city"][$city]["status"] .
 									"/del 停止縣市通知\n" .
 									"/show 列出已接收通知縣市的訊息");
 							}
@@ -305,11 +307,10 @@ foreach ($row as $data) {
 					} else {
 						$msg = "";
 						foreach ($user as $city) {
-							$msg .= $city . "：「" . $D["city"][$city]["status"] . "」\n";
+							$msg .= $D["city"][$city]["status"];
 						}
 						$msg .= "\n" .
-							"/del 停止縣市通知\n" .
-							"貼心小提醒：公布了會主動通知，尚未公布多/show幾次也不會提早公布唷，已公布了再怎麼/show也不會改變的唷，有不滿請找相關權責單位";
+							"/del 停止縣市通知";
 						SendMessage($tmid, $msg);
 					}
 					break;
