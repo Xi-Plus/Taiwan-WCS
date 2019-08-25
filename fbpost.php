@@ -18,7 +18,6 @@ $text = '';
 foreach ($msgs as $msg) {
 	$text .= date("Y/m/d H:i", strtotime($msg['time'])) . " " . $msg['msg'] . "\n";
 }
-$text .= "\n資料來源：行政院人事行政總處";
 echo $text . "\n";
 
 $ch = curl_init();
